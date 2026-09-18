@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Xyrus AI — Premium AI Chat Workspace">
+  <title>Xyrus AI</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <aside id="sidebar" class="sidebar" aria-label="Riwayat percakapan">
+      <div class="sidebar-top">
+        <a class="brand" href="#" aria-label="Xyrus AI">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none"><path d="M8 7.5h16M8 24.5h16M9 7.5l14 17M23 7.5L9 24.5" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></svg>
+          </span>
+          <span>Xyrus <strong>AI</strong></span>
+        </a>
+        <button id="newChatBtn" class="icon-btn" type="button" aria-label="Obrolan baru" title="Obrolan baru">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <button id="sidebarNewChat" class="new-chat-btn" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Obrolan Baru</span>
+      </button>
+      <label class="search-box" for="historySearch">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input id="historySearch" type="search" autocomplete="off" placeholder="Cari percakapan..." aria-label="Cari percakapan">
+        <kbd>⌘K</kbd>
+      </label>
+      <div class="history-heading"><span>Riwayat</span><button id="clearAllBtn" class="text-btn" type="button">Hapus semua</button></div>
+      <div id="historyList" class="history-list" role="list"></div>
+      <div class="sidebar-bottom">
+        <button id="settingsBtn" class="sidebar-action" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.2 3.5a6.1 6.1 0 0 0-.1-1l2-1.55-1.9-3.3-2.35.95a7.3 7.3 0 0 0-1.75-1L15.75 3h-3.8l-.35 3.1a7.3 7.3 0 0 0-1.75 1L7.5 6.15 5.6 9.45 7.6 11a6.1 6.1 0 0 0 0 2l-2 1.55 1.9 3.3 2.35-.95a7.3 7.3 0 0 0 1.75 1l.35 3.1h3.8l.35-3.1a7.3 7.3 0 0 0 1.75-1l2.35.95 1.9-3.3-2-1.55c.07-.33.1-.66.1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          <span>Pengaturan</span>
+        </button>
+        <div class="gateway-mini"><span class="status-dot"></span><span>Gateway siap</span><span class="model-count">23 model</span></div>
+      </div>
+    </aside>
+
+    <div id="drawerOverlay" class="drawer-overlay" hidden></div>
+    <main class="chat-layout">
+      <header class="chat-header">
+        <div class="header-left">
+          <button id="menuBtn" class="icon-btn mobile-only" type="button" aria-label="Buka menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+          <div class="model-picker" id="modelPicker">
+            <button id="modelButton" class="model-button" type="button" aria-haspopup="listbox" aria-expanded="false">
+              <span class="model-orb" aria-hidden="true"></span>
+              <span class="model-button-copy"><small>Model</small><strong id="selectedModelName">GPT-5.6 Luna</strong></span>
+              <svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 9 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <div id="modelMenu" class="model-menu" role="listbox" aria-label="Pilih model" hidden>
+              <div class="model-search-wrap">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                <input id="modelSearch" type="search" placeholder="Cari model..." autocomplete="off" aria-label="Cari model">
+              </div>
+              <div id="modelOptions"></div>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <div id="connectionStatus" class="connection-status ready"><span class="status-dot"></span><span>Ready</span></div>
+          <button id="headerSettingsBtn" class="icon-btn" type="button" aria-label="Pengaturan" title="Pengaturan">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.2 3.5a6.1 6.1 0 0 0-.1-1l2-1.55-1.9-3.3-2.35.95a7.3 7.3 0 0 0-1.75-1L15.75 3h-3.8l-.35 3.1a7.3 7.3 0 0 0-1.75 1L7.5 6.15 5.6 9.45 7.6 11a6.1 6.1 0 0 0 0 2l-2 1.55 1.9 3.3 2.35-.95a7.3 7.3 0 0 0 1.75 1l.35 3.1h3.8l.35-3.1a7.3 7.3 0 0 0 1.75-1l2.35.95 1.9.95 1.9-3.3-2-1.55c.07-.33.1-.66.1-1Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section id="chatScroll" class="chat-scroll" aria-live="polite">
+        <div id="chatContent" class="chat-content">
+          <div id="emptyState" class="empty-state">
+            <div class="hero-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M12 11h24M12 37h24M14 11l20 26M34 11 14 37" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
+            </div>
+            <p class="eyebrow">Xyrus AI</p>
+            <h1>Selamat datang di Xyrus AI</h1>
+            <p>Mulai percakapan dengan AI pilihanmu.</p>
+            <div class="suggestions">
+              <button type="button" class="suggestion" data-prompt="Jelaskan sesuatu dengan sederhana"><span>Jelaskan sesuatu dengan sederhana</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 12 4 4 4-4m-4 4V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="suggestion" data-prompt="Bantu saya membuat kode"><span>Bantu saya membuat kode</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 12 4 4 4-4m-4 4V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="suggestion" data-prompt="Analisis ide saya"><span>Analisis ide saya</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 12 4 4 4-4m-4 4V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="suggestion" data-prompt="Bantu saya belajar"><span>Bantu saya belajar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 12 4 4 4-4m-4 4V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <button id="scrollLatestBtn" class="scroll-latest" type="button" aria-label="Pesan terbaru" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14m-6-6 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Pesan terbaru</span>
+      </button>
+
+      <footer class="composer-area">
+        <form id="composerForm" class="composer">
+          <textarea id="messageInput" rows="1" maxlength="50000" placeholder="Tulis pesan..." aria-label="Pesan"></textarea>
+          <div class="composer-bottom">
+            <div class="composer-hint"><kbd>Enter</kbd> kirim · <kbd>Shift</kbd> + <kbd>Enter</kbd> baris baru</div>
+            <div class="composer-actions">
+              <span id="charCount" class="char-count">0 / 50k</span>
+              <button id="stopBtn" class="round-btn stop-btn" type="button" aria-label="Hentikan" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor"/></svg>
+              </button>
+              <button id="sendBtn" class="round-btn send-btn" type="submit" aria-label="Kirim">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 14-7-5 14-2-6-7-1Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m12 13 7-8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </form>
+        <p class="composer-disclaimer">Xyrus AI dapat membuat kesalahan. Periksa informasi penting sebelum menggunakannya.</p>
+      </footer>
+    </main>
+  </div>
+
+  <div id="modalRoot" class="modal-root" hidden>
+    <div id="modalBackdrop" class="modal-backdrop"></div>
+    <div id="modalDialog" class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+      <div class="modal-header"><div><p id="modalEyebrow" class="modal-eyebrow">Xyrus AI</p><h2 id="modalTitle">Pengaturan</h2></div><button id="modalClose" class="icon-btn" type="button" aria-label="Tutup"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalFooter" class="modal-footer"></div>
+    </div>
+  </div>
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/lib/common.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
